@@ -50,12 +50,6 @@ exports.addLost = (req, res) => {
     date: new Date(),
     userid: req.auth.id,
   };
-  if (!req.file || req.file.mimetype !== "image/jpeg") {
-    return res.send({
-      state: 400,
-      message: "请上传图片！",
-    });
-  }
   const sql = 'insert into lost set ?'
   db.query(sql, body, (err, results) => {
     if (err) {

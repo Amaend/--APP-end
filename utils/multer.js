@@ -20,7 +20,6 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, callback) {
     //fieldname 为文件域的名称
-    console.log(file)
     callback(null, file.fieldname + '_' + Date.now() + '.jpg')
   }
 })

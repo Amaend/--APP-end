@@ -40,13 +40,42 @@ exports.dtLost = (req, res) => {
   });
 };
 
-// 用户添加失物信息处理函数
+// 用户添加失物信息处理函数（带有图片的处理函数）
 exports.addLost = (req, res) => {
   const img =
     `http://${localIP}:3000/images/${req.body.url}/` + req.file.filename;
   const body = {
     ...JSON.parse(req.body.info),
     img: img,
+    date: new Date(),
+    userid: req.auth.id,
+  };
+  const sql = "insert into lost set ?";
+  db.query(sql, body, (err, results) => {
+    if (err) {
+      return res.send(err);
+    }
+    if (results.affectedRows !== 1) {
+      return res.send({
+        state: 400,
+        message: "发布失败！",
+      });
+    }
+    res.send({
+      state: 200,
+      message: "发布成功！",
+      data: {
+        id: results.insertId,
+      },
+    });
+  });
+};
+
+// 用户添加失物信息处理函数（未上传图片的处理函数）
+exports.addLostNotImg = (req, res) => {
+  const body = {
+    ...JSON.parse(req.body.info),
+    img: `http://${localIP}:3000/images/default_image/none.png`,
     date: new Date(),
     userid: req.auth.id,
   };

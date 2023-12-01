@@ -14,8 +14,12 @@ router.get('/api/lost', lost.lostData)
 // 管理员删除失物数据
 router.delete('/dtlost', lost.dtLost)
 
-// 用户添加失物信息处理函数
+// 用户添加失物信息处理函数(带有图片)
 router.post('/user/addlost', upload.single('img'), lost.addLost)
+
+// 用户添加失物信息处理函数（未上传图片）
+router.post('/user/addlostnoimg', lost.addLostNotImg)
+
 
 // 获取当前用户发布的失物信息
 router.get('/user/userlostinfo', lost.userLostInfo)

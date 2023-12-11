@@ -10,6 +10,10 @@ const upload =require('../utils/multer.js')
 // 获取当前登录用户的信息
 router.get('/loginuserinfo', userinfo.loginUserInfo)
 
+// 获取用户的信息
+router.get('/api/getuserinfo', userinfo.getUserInfo)
+
+
 // 修改当前用户头像
 router.post('/updateimg',upload.single("img"), userinfo.updateImg)
 

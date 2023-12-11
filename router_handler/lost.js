@@ -4,6 +4,7 @@ const db = require("../db");
 
 const path = require("path");
 const getLocalIP = require("../utils/getLocalIp");
+
 let localIP = getLocalIP();
 // 获取失物数据处理函数
 exports.lostData = (req, res) => {

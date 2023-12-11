@@ -27,6 +27,27 @@ exports.loginUserInfo = (req, res) => {
   });
 };
 
+// 获取用户信息
+exports.getUserInfo = (req, res) => {
+  const sql = "select * from user where id=?";
+  db.query(sql, req.query.id, (err, results) => {
+    if (err) {
+      return res.send(err);
+    }
+    if (results.length !== 1) {
+      return res.send({
+        state: 201,
+        message: "用户信息获取失败！",
+      });
+    }
+    res.send({
+      state: 200,
+      message: "获取用户信息成功",
+      data: results[0],
+    });
+  });
+};
+
 // 修改当前用户头像
 exports.updateImg = (req, res) => {
   const sql = "update user set img=? where id=?";

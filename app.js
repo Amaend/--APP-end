@@ -16,6 +16,8 @@ var usersInfoRouter = require('./router/userinfo');
 let claimsRouter = require('./router/claim');
 // 寻物启事模块
 let lostRouter = require('./router/lost');
+// 物品分类路由模块
+let classRouter = require('./router/class');
 var app = express();
 
 // view engine setup
@@ -59,4 +61,6 @@ app.use('/my', usersInfoRouter);
 app.use('/my', claimsRouter);
 // 寻物启事路由
 app.use('/my', lostRouter);
+// 分类路由
+app.use('/class', classRouter);
 module.exports = app;

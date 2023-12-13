@@ -70,7 +70,7 @@ exports.deleteClass = (req, res) => {
 // 根据分类获取对应分类的失物和招领信息数据
 exports.lostClassList = (req, res) => {
   const id = req.query.id;
-  const sql = "select * from lost where class=?";
+  const sql = "select * from lost where class=? ORDER BY date DESC";
   db.query(sql, id, (err, results) => {
     if (err) {
       return res.status(500).send(err);
@@ -118,7 +118,7 @@ exports.lostClassList = (req, res) => {
 
 exports.foundClassList = (req, res) => {
   const id = req.query.id;
-  const sql = "select * from claim where class=?";
+  const sql = "SELECT * FROM claim WHERE class=? ORDER BY date DESC";
   db.query(sql, id, (err, results) => {
     if (err) {
       return res.status(500).send(err);

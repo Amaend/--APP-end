@@ -45,7 +45,7 @@ exports.addClaim = (req, res) => {
     `http://${localIP}:3000/images/${req.body.url}/` + req.file.filename;
   const body = {
     ...JSON.parse(req.body.info),
-    img: img,
+    image: img,
     date: new Date(),
     userid: req.auth.id,
   };

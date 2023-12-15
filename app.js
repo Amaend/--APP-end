@@ -18,6 +18,8 @@ let claimsRouter = require('./router/claim');
 let lostRouter = require('./router/lost');
 // 物品分类路由模块
 let classRouter = require('./router/class');
+// 分页功能路由模块
+let pageRouter = require('./router/page');
 var app = express();
 
 // view engine setup
@@ -63,4 +65,6 @@ app.use('/my', claimsRouter);
 app.use('/my', lostRouter);
 // 分类路由
 app.use('/class', classRouter);
+// 分页模块
+app.use('/page', pageRouter);
 module.exports = app;

@@ -20,7 +20,6 @@ router.post('/user/addlost', upload.single('img'), lost.addLost)
 // 用户添加失物信息处理函数（未上传图片）
 router.post('/user/addlostnoimg', lost.addLostNotImg)
 
-
 // 获取当前用户发布的失物信息
 router.get('/user/userlostinfo', lost.userLostInfo)
 
@@ -29,10 +28,13 @@ router.delete('/user/dtlost', lost.userLostdt)
 
 // 用户更新失物状态
 router.post('/user/lost/updatestate', lost.updateState)
+
 // 管理员更新失物状态
 router.post('/user/lost/adminupdatestate', lost.adminUpdateState)
 
 // 获取全部发布的物品数据
 router.get('/api/wholedata', lost.wholeData)
 
+// 获取用户搜索物品的数据
+router.post('/api/searchdata', lost.searchData)
 module.exports = router

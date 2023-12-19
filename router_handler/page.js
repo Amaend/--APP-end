@@ -10,7 +10,7 @@ exports.pageLost = (req, res) => {
     (parseInt(page_num) - 1) * parseInt(page_size),
     parseInt(page_size),
   ];
-  let countSql = `SELECT COUNT(*) AS total FROM lost`;
+  let countSql = `SELECT COUNT(*) AS total FROM lost where state =${state}`;
   const sql = `select * from lost Where state = ${state} ORDER BY date DESC limit ?,?`;
   db.query(countSql, (err, countResult) => {
     if (err) {
@@ -80,7 +80,7 @@ exports.pageFound = (req, res) => {
   ];
   console.log(params);
   const sql = `select * from claim Where state=${state} ORDER BY date DESC limit ?,?`;
-  let countSql = `SELECT COUNT(*) AS total FROM claim`;
+  let countSql = `SELECT COUNT(*) AS total FROM claim where state=${state}`;
   db.query(countSql, (err, countResult) => {
     if (err) {
       return res.status(500).send(err);

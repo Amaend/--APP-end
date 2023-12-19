@@ -213,3 +213,57 @@ exports.adminUpdateState = (req, res) => {
     });
   });
 };
+// 用户搜索商品接口
+exports.searchData = (req, res) => {
+  const name = req.body.name;
+  console.log(name)
+  const sql = "select * from lost where name like ?";
+  db.query(sql, "%" + name + "%", (err, results1) => {
+    if (err) {
+      return res.send(err);
+    }
+    const sql = "select * from claim where name like ?";
+    db.query(sql, "%" + name + "%", (err, results2) => {
+      if (err) {
+        return res.send(err);
+      }
+      let results = results1.concat(results2);
+      if(results.length === 0){
+        return res.send({
+          state: 0,
+          msg: "未查询到相关物品"
+        });
+      }
+      const getUserInfoPromises = results.map((item) => {
+        return new Promise((resolve, reject) => {
+          const userSql = "select * from user where id=?";
+          db.query(userSql, item.userid, (err, userResult) => {
+            if (err) {
+              reject(err);
+            } else if (userResult.length !== 1) {
+              reject({
+                state: 201,
+                message: "用户信息获取失败！",
+              });
+            } else {
+              item.userInfo = userResult[0];
+              resolve(item);
+            }
+          });
+        });
+      });
+
+      Promise.all(getUserInfoPromises)
+        .then((finalResults) => {
+          return res.status(200).send({
+            state: 200,
+            message: "获取数据成功！",
+            data: finalResults,
+          });
+        })
+        .catch((error) => {
+          return res.status(500).send(error);
+        });
+    })
+});
+}

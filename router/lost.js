@@ -37,4 +37,7 @@ router.get('/api/wholedata', lost.wholeData)
 
 // 获取用户搜索物品的数据
 router.post('/api/searchdata', lost.searchData)
+
+// 根据id值获取失物信息
+router.get('/api/lost/id', lost.getLostItemInfo)
 module.exports = router

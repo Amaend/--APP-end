@@ -20,6 +20,8 @@ let lostRouter = require('./router/lost');
 let classRouter = require('./router/class');
 // 分页功能路由模块
 let pageRouter = require('./router/page');
+// 收藏功能路由模块
+let collectRouter = require('./router/collect');
 var app = express();
 
 // view engine setup
@@ -67,4 +69,6 @@ app.use('/my', lostRouter);
 app.use('/class', classRouter);
 // 分页模块
 app.use('/page', pageRouter);
+// 收藏模块
+app.use('/collect', collectRouter);
 module.exports = app;

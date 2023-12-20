@@ -6,6 +6,7 @@ exports.pageLost = (req, res) => {
   const page_num = req.query.page_num; //当前的num
   const page_size = req.query.page_size; //当前页的数量
   const state = req.query.state;
+  const user_id = req.query.user_id;
   const params = [
     (parseInt(page_num) - 1) * parseInt(page_size),
     parseInt(page_size),
@@ -40,10 +41,16 @@ exports.pageLost = (req, res) => {
                 state: 201,
                 message: "用户信息获取失败！",
               });
-            } else {
-              item.userInfo = userResult[0];
-              resolve(item);
             }
+            const collectsql ="select * from collection where goods_id=? and lost_found=? and user_id=?";
+            db.query(collectsql,[item.id,item.lost_found,user_id],(err,collectResult)=>{
+              if(err){
+                reject(err);
+              }
+              item.collectInfo=collectResult[0] ? collectResult[0] : [];
+              item.userInfo=userResult[0];
+              resolve(item);
+            })
           });
         });
       });
@@ -74,6 +81,7 @@ exports.pageFound = (req, res) => {
   const page_num = req.query.page_num; //当前的num
   const page_size = req.query.page_size; //当前页的数量
   const state = req.query.state;
+  const user_id = req.query.user_id;
   const params = [
     (parseInt(page_num) - 1) * parseInt(page_size),
     parseInt(page_size),
@@ -109,10 +117,16 @@ exports.pageFound = (req, res) => {
                 state: 201,
                 message: "用户信息获取失败！",
               });
-            } else {
-              item.userInfo = userResult[0];
-              resolve(item);
             }
+            const collectsql ="select * from collection where goods_id=? and lost_found=? and user_id=?";
+            db.query(collectsql,[item.id,item.lost_found,user_id],(err,collectResult)=>{
+              if(err){
+                reject(err);
+              }
+              item.collectInfo=collectResult[0] ? collectResult[0] : [];
+              item.userInfo=userResult[0];
+              resolve(item);
+            })
           });
         });
       });

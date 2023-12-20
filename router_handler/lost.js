@@ -216,7 +216,7 @@ exports.adminUpdateState = (req, res) => {
 // 用户搜索商品接口
 exports.searchData = (req, res) => {
   const name = req.body.name;
-  console.log(name)
+  console.log(name);
   const sql = "select * from lost where name like ?";
   db.query(sql, "%" + name + "%", (err, results1) => {
     if (err) {
@@ -228,10 +228,10 @@ exports.searchData = (req, res) => {
         return res.send(err);
       }
       let results = results1.concat(results2);
-      if(results.length === 0){
+      if (results.length === 0) {
         return res.send({
           state: 0,
-          msg: "未查询到相关物品"
+          msg: "未查询到相关物品",
         });
       }
       const getUserInfoPromises = results.map((item) => {
@@ -264,6 +264,57 @@ exports.searchData = (req, res) => {
         .catch((error) => {
           return res.status(500).send(error);
         });
-    })
-});
-}
+    });
+  });
+};
+// 获取单个失物详细信息
+/**
+ *
+ * @param {id,user_id} req
+ * @param {*} res
+ */
+exports.getLostItemInfo = (req, res) => {
+  const { id, user_id } = req.query;
+  console.log(id, user_id);
+  const sql = "select * from lost where id=?";
+  db.query(sql, id, (err, results) => {
+    if (err) {
+      return res.status(500).send({
+        state: 500,
+        message: "获取数据失败！",
+      });
+    } else if (results.length !== 1) {
+      return res.status(201).send({
+        state: 201,
+        message: "获取数据失败！",
+      });
+    }
+    const { userid, lost_found } = results[0];
+    console.log(userid, lost_found);
+    const userSql = "select * from user where id=?";
+    db.query(userSql, userid, (err, userResult) => {
+      if (err) {
+        reject(err);
+      } else if (userResult.length !== 1) {
+        reject({
+          state: 201,
+          message: "用户信息获取失败！",
+        });
+      }
+      const collectsql =
+        "select * from collection where goods_id=? and lost_found=? and user_id=?";
+      db.query(collectsql, [id, lost_found, user_id], (err, collectResult) => {
+        if (err) {
+          reject(err);
+        }
+        results[0].collectInfo = collectResult[0] ? collectResult[0] : [];
+        results[0].userInfo = userResult[0];
+        res.send({
+          state:200,
+          message:"获取数据成功！",
+          data:results[0]
+        })
+      });
+    });
+  });
+};

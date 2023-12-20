@@ -28,7 +28,10 @@ router.delete('/user/dtclaim', claim.userClaimdt)
 
 // 用户更新招领状态
 router.post('/user/claim/updatestate', claim.updateState)
+
 // 管理员更新招领状态
 router.post('/user/claim/adminupdatestate', claim.adminUpdateState)
 
+// 根据id获取招领信息
+router.get('/api/claim/id', claim.getClaimItemInfo)
 module.exports = router

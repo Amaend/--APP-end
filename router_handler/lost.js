@@ -201,7 +201,6 @@ exports.adminUpdateState = (req, res) => {
     }
     const sql = "update lost set state=? where id=?";
     const state = !results1[0].state;
-    console.log(state);
     db.query(sql, [state, body.id], (err, results2) => {
       if (err) {
         return res.ss(err);
@@ -216,7 +215,6 @@ exports.adminUpdateState = (req, res) => {
 // 用户搜索商品接口
 exports.searchData = (req, res) => {
   const name = req.body.name;
-  console.log(name);
   const sql = "select * from lost where name like ?";
   db.query(sql, "%" + name + "%", (err, results1) => {
     if (err) {
@@ -275,7 +273,6 @@ exports.searchData = (req, res) => {
  */
 exports.getLostItemInfo = (req, res) => {
   const { id, user_id } = req.query;
-  console.log(id, user_id);
   const sql = "select * from lost where id=?";
   db.query(sql, id, (err, results) => {
     if (err) {
@@ -290,7 +287,6 @@ exports.getLostItemInfo = (req, res) => {
       });
     }
     const { userid, lost_found } = results[0];
-    console.log(userid, lost_found);
     const userSql = "select * from user where id=?";
     db.query(userSql, userid, (err, userResult) => {
       if (err) {

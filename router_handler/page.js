@@ -2,7 +2,6 @@ const db = require("../db");
 
 // 失物分页功能
 exports.pageLost = (req, res) => {
-  console.log(req.query);
   const page_num = req.query.page_num; //当前的num
   const page_size = req.query.page_size; //当前页的数量
   const state = req.query.state;
@@ -86,7 +85,6 @@ exports.pageFound = (req, res) => {
     (parseInt(page_num) - 1) * parseInt(page_size),
     parseInt(page_size),
   ];
-  console.log(params);
   const sql = `select * from claim Where state=${state} ORDER BY date DESC limit ?,?`;
   let countSql = `SELECT COUNT(*) AS total FROM claim where state=${state}`;
   db.query(countSql, (err, countResult) => {

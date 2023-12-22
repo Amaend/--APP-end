@@ -180,7 +180,6 @@ exports.adminUpdateState = (req, res) => {
     }
     const sql = "update claim set state=? where id=?";
     const state = !results1[0].state;
-    console.log(state);
     db.query(sql, [state, body.id], (err, results2) => {
       if (err) {
         return res.ss(err);
@@ -200,7 +199,6 @@ exports.adminUpdateState = (req, res) => {
  */
 exports.getClaimItemInfo = (req, res) => {
   const { id, user_id } = req.query;
-  console.log(id, user_id);
   const sql = "select * from claim where id=?";
   db.query(sql, id, (err, results) => {
     if (err) {
@@ -215,7 +213,6 @@ exports.getClaimItemInfo = (req, res) => {
       });
     }
     const { userid, lost_found } = results[0];
-    console.log(userid, lost_found);
     const userSql = "select * from user where id=?";
     db.query(userSql, userid, (err, userResult) => {
       if (err) {

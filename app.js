@@ -43,7 +43,7 @@ app.use(jwt({ secret: config.jwtSecretKey, algorithms: ["HS256"] }).unless({ pat
 app.use(function(err, req, res, next) {
   // token解析失败导致的错误
   if (err.name === 'UnauthorizedError') {
-    return res.send({status: 401, message: '无效的token'})
+    return res.send({state: 401, message: '无效的token'})
 }
   // set locals, only providing error in development
   res.locals.message = err.message;

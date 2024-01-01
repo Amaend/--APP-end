@@ -17,8 +17,6 @@ router.delete('/dtclaim', claim.dtClaim)
 // 用户添加招领信息
 router.post('/user/addclaim', upload.single('img'), claim.addClaim)
 
-// 用户添加验证消息
-router.post('/user/claim/addmsg', claim.setMessage)
 
 // 获取当前用户发布的招领信息
 router.get('/user/userclaiminfo', claim.userClaimInfo)
@@ -34,4 +32,10 @@ router.post('/user/claim/adminupdatestate', claim.adminUpdateState)
 
 // 根据id获取招领信息
 router.get('/api/claim/id', claim.getClaimItemInfo)
+
+// 用户更新招领数据
+router.post('/user/claim/update',claim.updateClaim)
+
+// 用户更新招领图片
+router.post('/user/claim/updateimg', upload.single('img'), claim.updateClaimImg)
 module.exports = router

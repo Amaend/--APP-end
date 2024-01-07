@@ -22,6 +22,8 @@ let classRouter = require('./router/class');
 let pageRouter = require('./router/page');
 // 收藏功能路由模块
 let collectRouter = require('./router/collect');
+// 评论功能路由模块
+let commentRouter = require('./router/comment');
 var app = express();
 
 // view engine setup
@@ -71,4 +73,6 @@ app.use('/class', classRouter);
 app.use('/page', pageRouter);
 // 收藏模块
 app.use('/collect', collectRouter);
+// 评论模块
+app.use('/comment', commentRouter);
 module.exports = app;

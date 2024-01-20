@@ -24,6 +24,10 @@ let pageRouter = require('./router/page');
 let collectRouter = require('./router/collect');
 // 评论功能路由模块
 let commentRouter = require('./router/comment');
+// 好友功能路由模块
+let friendRouter = require('./router/friend');
+// 系统公告模块
+let noticeRouter = require('./router/notice');
 var app = express();
 
 // view engine setup
@@ -75,4 +79,8 @@ app.use('/page', pageRouter);
 app.use('/collect', collectRouter);
 // 评论模块
 app.use('/comment', commentRouter);
+// 好友模块
+app.use('/friend', friendRouter);
+// 系统公告模块
+app.use('/notice', noticeRouter);
 module.exports = app;

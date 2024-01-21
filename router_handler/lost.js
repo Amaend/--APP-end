@@ -44,7 +44,7 @@ exports.dtLost = (req, res) => {
 // 用户添加失物信息处理函数（带有图片的处理函数）
 exports.addLost = (req, res) => {
   const img =
-    `http://${localIP}:3000/images/${req.body.url}/` + req.file.filename;
+    `/images/${req.body.url}/` + req.file.filename;
   const body = {
     ...JSON.parse(req.body.info),
     image: img,
@@ -76,7 +76,7 @@ exports.addLost = (req, res) => {
 exports.addLostNotImg = (req, res) => {
   const body = {
     ...JSON.parse(req.body.info),
-    image: `http://${localIP}:3000/images/default_image/none.png`,
+    image: `/images/default_image/none.png`,
     date: new Date(),
     userid: req.auth.id,
   };
@@ -368,7 +368,7 @@ exports.updateLost = (req, res) => {
 exports.updateLostImg = (req, res) => {
   const sql = "update lost set image=? where id=?";
   const body = {
-    image: `http://${localIP}:3000/images/${req.body.url}/` + req.file.filename,
+    image: `/images/${req.body.url}/` + req.file.filename,
   };
   db.query(sql, [body.image, req.body.id], (err, results) => {
     if (err) {

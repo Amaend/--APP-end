@@ -42,7 +42,7 @@ exports.dtClaim = (req, res) => {
 // 用户添加招领信息处理函数
 exports.addClaim = (req, res) => {
   const img =
-    `http://${localIP}:3000/images/${req.body.url}/` + req.file.filename;
+    `/images/${req.body.url}/` + req.file.filename;
   const body = {
     ...JSON.parse(req.body.info),
     image: img,
@@ -265,7 +265,7 @@ exports.updateClaim = (req, res) => {
 exports.updateClaimImg = (req, res) => {
   const sql = "update claim set image=? where id=?";
   const body = {
-    image: `http://${localIP}:3000/images/${req.body.url}/` + req.file.filename,
+    image: `/images/${req.body.url}/` + req.file.filename,
   };
   db.query(sql, [body.image, req.body.id], (err, results) => {
     if (err) {

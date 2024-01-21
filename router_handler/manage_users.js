@@ -27,7 +27,7 @@ exports.usersList = (req, res) => {
 exports.addUsers = (req, res) => {
   let body = req.body
   const sql = 'select * from user where phone=?'
-  body = {...req.body, img: `http://${localIP}:3000/images/img_1660464010198.jpg`}
+  body = {...req.body, img: `/images/img_1660464010198.jpg`}
   // 加密密码
   body.password = bcrypt.hashSync(body.password, 10)
 

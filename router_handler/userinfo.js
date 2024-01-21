@@ -52,7 +52,7 @@ exports.getUserInfo = (req, res) => {
 exports.updateImg = (req, res) => {
   const sql = "update user set img=? where id=?";
   const body = {
-    img: `http://${localIP}:3000/images/${req.body.url}/` + req.file.filename,
+    img: `/images/${req.body.url}/` + req.file.filename,
   };
   db.query(sql, [body.img, req.auth.id], (err, results) => {
     if (err) {

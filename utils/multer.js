@@ -22,7 +22,6 @@ const storage = multer.diskStorage({
     }
   },
   filename: function (req, file, callback) {
-    console.log(file);
     let type=file.originalname.replace(/.+\./,".");
     //fieldname 为文件域的名称
     callback(null, file.fieldname + "_" + Date.now() + type);

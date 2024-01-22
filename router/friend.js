@@ -5,6 +5,8 @@ const router = express.Router()
 
 const friend = require('../router_handler/friend.js')
 
+const upload = require('../utils/multer.js')
+
 // 搜索好友
 router.get('/search', friend.searchFriend)
 
@@ -28,4 +30,8 @@ router.post('/update/message/status', friend.updateOneMessageState)
 
 // 获取一对一消息队列
 router.post('/get/message/queue', friend.getOneMessageByPage)
+
+// 获取上传消息附件
+router.post('/upload/message/file', upload.single('file'), friend.uploaMsgdFile)
+
 module.exports = router

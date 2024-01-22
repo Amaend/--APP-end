@@ -1,6 +1,5 @@
 // 好友模块
 const db = require("../db");
-const { getUnreadNoticesById } = require("./notice");
 // 保存this指向
 let that = this;
 // 搜索好友
@@ -62,17 +61,15 @@ exports.addOneMsg = function (uid, fid, msg, type, res) {
   let data = {
     user_id: uid,
     friend_id: fid,
-    message: msg,
+    message:type==0 ? msg : JSON.stringify(msg),
     types: type,
     time: new Date().getTime(),
     state: 1,
   };
   db.query(`INSERT INTO message SET ?`, data, function (err, results) {
-    if (err) return res.send(err);
-    return res.send({
-      state: 200,
-      message: "添加成功",
-    });
+    if (err){
+      console.log(err)
+    }
   });
 };
 
@@ -341,12 +338,11 @@ exports.getApplyFriendList = async function (req, res) {
 exports.updateOneMessageState = function (req, res) {
   let data = req.body;
   const sql = "update message set state=0 where user_id=? and friend_id=?";
-  const state = !results1[0].state;
-  db.query(sql, [state, data.friend_id, req.auth.id], (err, results2) => {
+  db.query(sql, [data.friend_id, req.auth.id], (err, results) => {
     if (err) {
       return res.send(err);
     }
-    if (results2.affectedRows !== 1) {
+    if (results.affectedRows == 0) {
       return res.send({
         message: "更新状态失败！",
         state: 201,
@@ -430,3 +426,13 @@ exports.getOneMessageByPage = (req, res) => {
     });
   });
 };
+// 上传聊天附件
+exports.uploaMsgdFile = (req, res) => {
+  const message = `/images/${req.body.url}/` + req.file.filename;
+  if(message){
+    return res.send({
+      state: 200,
+      message: message,
+    })
+  }
+}

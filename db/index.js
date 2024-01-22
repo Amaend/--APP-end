@@ -6,7 +6,8 @@ const db = mysql.createPool({
   host: '127.0.0.1',
   user: 'root',
   password: '123456',
-  database: 'campus_search'
+  database: 'campus_search',
+  charset:'utf8mb4'
 })
 
 module.exports = db

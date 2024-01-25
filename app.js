@@ -29,6 +29,8 @@ let commentRouter = require("./router/comment");
 let friendRouter = require("./router/friend");
 // 系统公告模块
 let noticeRouter = require("./router/notice");
+// 建议模块
+let adviceRouter = require("./router/advice");
 var app = express();
 
 
@@ -114,4 +116,6 @@ app.use("/comment", commentRouter);
 app.use("/friend", friendRouter);
 // 系统公告模块
 app.use("/notice", noticeRouter);
+// 建议模块
+app.use("/advice", adviceRouter);
 module.exports = app;

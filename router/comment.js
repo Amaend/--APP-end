@@ -12,4 +12,8 @@ router.get('/get/commentlist', comment.getComment)
 
 // 根据用户id获取用户的评论数据
 router.get('/get/commencountbyuserid', comment.getUserCommentsCount)
+
+// 获取用户回复消息
+router.get('/get/replylist', comment.getReplyComment)
+
 module.exports = router

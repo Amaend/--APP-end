@@ -436,3 +436,29 @@ exports.uploaMsgdFile = (req, res) => {
     })
   }
 }
+// 获取好友数
+exports.getFriendsNum = (req, res) => {
+  const userId = req.auth.id;
+  const sql = `select count(*) as num from friend where user_id=?`;
+  db.query(sql, userId, (err, results) => {
+    if (err) {
+      return res.status(500).send({
+        state: 500,
+        message: "获取数据失败！",
+      });
+      }
+      if(results.length === 0){
+        return res.send({
+          state: 201,
+          message: "暂无好友！",
+          data: results,
+        })
+      }
+      return res.send({
+        state: 200,
+        message: "获取数据成功！",
+        data: results[0],
+      })
+    }
+  )
+}

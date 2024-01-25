@@ -143,7 +143,7 @@ exports.deleteCommentById = (req, res) => {
               state: 200,
               message: "删除评论成功！",
             });
-          }   
+          }
         });
       } else {
         return res.status(200).send({
@@ -154,4 +154,24 @@ exports.deleteCommentById = (req, res) => {
     }
   });
 };
-
+// 获取用户回复评论消息
+exports.getReplyComment = (req, res) => {
+  const id = req.auth.id;
+  const sql = "SELECT * FROM comment WHERE replyuser_id = ?";
+  db.query(sql, id, (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    if (result.length == 0) {
+      return res.send({
+        state: 201,
+        message: "暂无回复评论信息！",
+      });
+    }
+    return res.send({
+      state: 200,
+      message: "获取回复评论信息成功！",
+      data: result,
+    });
+  });
+};

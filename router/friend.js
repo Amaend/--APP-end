@@ -34,4 +34,7 @@ router.post('/get/message/queue', friend.getOneMessageByPage)
 // 获取上传消息附件
 router.post('/upload/message/file', upload.single('file'), friend.uploaMsgdFile)
 
+// 获取好友数
+router.get('/get/friend/count', friend.getFriendsNum)
+
 module.exports = router

@@ -157,7 +157,7 @@ exports.deleteCommentById = (req, res) => {
 // 获取用户回复评论消息
 exports.getReplyComment = (req, res) => {
   const id = req.auth.id;
-  const sql = "SELECT * FROM comment WHERE replyuser_id = ? by comtime DESC";
+  const sql = "SELECT * FROM comment WHERE replyuser_id = ? ORDER BY comtime DESC";
   db.query(sql, id, (err, result) => {
     if (err) {
       return res.status(500).send(err);

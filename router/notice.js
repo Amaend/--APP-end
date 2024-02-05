@@ -15,6 +15,6 @@ router.get('/get/unreadnotice', notice.getUnreadNoticesById)
 router.get('/mark/read', notice.markAllNoticesAsRead)
 
 // 获取最新的公告
-router.get('/get/newnotice', notice.getLatestNotice)
+router.get('/get/api/newnotice', notice.getLatestNotice)
 
 module.exports = router

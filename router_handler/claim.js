@@ -33,9 +33,15 @@ exports.dtClaim = (req, res) => {
       return res.send(err);
     }
     if (results.affectedRows !== 1) {
-      return res.send("删除失败！");
+      return res.send({
+        state:201,
+        message:"删除失败！"
+      });
     }
-    res.send("删除成功！", 200);
+    res.send({
+      state:200,
+      message:"删除成功！"
+    });
   });
 };
 
@@ -86,7 +92,10 @@ exports.userClaimInfo = (req, res) => {
       return res.send(err);
     }
     if (results.length <= 0) {
-      return res.send("当前用户未发布招领信息!");
+      return res.send({
+        state: 201,
+        message: "当前用户未发布招领信息!",
+      });
     }
     const getClaimInfoPromises = results.map((item) => {
       return new Promise((resolve, reject) => {
@@ -187,9 +196,15 @@ exports.adminUpdateState = (req, res) => {
         return res.send(err);
       }
       if (results2.affectedRows !== 1) {
-        return res.send("更改状态失败！");
+        return res.send({
+          state:201,
+          message:"更新状态失败！"
+        });
       }
-      res.send("更改状态成功！", 200);
+      res.send({
+        state:200,
+        message:"更新状态成功！"
+      });
     });
   });
 };

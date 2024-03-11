@@ -35,9 +35,15 @@ exports.dtLost = (req, res) => {
       return res.send(err);
     }
     if (results.affectedRows !== 1) {
-      return res.send("删除数据失败！");
+      return res.send({
+        state:201,
+        message:"删除失物信息失败！"
+      });
     }
-    res.send("删除数据成功！", 200);
+    res.send({
+      state:200,
+      message:"删除失物信息成功！"
+    });
   });
 };
 
@@ -110,7 +116,10 @@ exports.userLostInfo = (req, res) => {
       return res.send(err);
     }
     if (results.length <= 0) {
-      return res.send("当前用户未发布招领信息!");
+      return res.send({
+        state: 201,
+        message: "当前用户未发布寻物信息",
+      });
     }
     const getLostInfoPromises = results.map((item) => {
       return new Promise((resolve, reject) => {
@@ -237,9 +246,15 @@ exports.adminUpdateState = (req, res) => {
         return res.send(err);
       }
       if (results2.affectedRows !== 1) {
-        return res.send("更改状态失败！");
+        return res.send({
+          state:201,
+          message:"更改状态失败！"
+        });
       }
-      res.send("更改状态成功！", 200);
+      res.send({
+        state:200,
+        message:"更改状态成功！"
+      });
     });
   });
 };
@@ -347,10 +362,7 @@ exports.updateLost = (req, res) => {
   const sql = "update lost set ? where id=?";
   db.query(sql, [body, body.id], (err, results) => {
     if (err) {
-      return res.send({
-        state: 500,
-        message: "服务器错误！",
-      });
+      return res.send(err);
     }
     if (results.affectedRows !== 1) {
       return res.send({

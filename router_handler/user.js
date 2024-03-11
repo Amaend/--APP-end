@@ -21,7 +21,7 @@ exports.regUser = (req, res) => {
   const sql = 'select * from user where phone=?'
   const body = {
     ...req.body,
-    img: `http://${localIP}:3000/images/img_1660464010198.jpg`,
+    img: '/images/img_1660464010198.jpg',
     school:'四川大学锦江学院',
     brith_data:'2023-01-01'
   }

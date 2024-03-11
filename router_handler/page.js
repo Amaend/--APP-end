@@ -4,7 +4,7 @@ const db = require("../db");
 exports.pageLost = (req, res) => {
   const page_num = req.query.page_num; //当前的num
   const page_size = req.query.page_size; //当前页的数量
-  const state = req.query.state;
+  const state = req.query.state?req.query.state:0;
   const user_id = req.query.user_id;
   const params = [
     (parseInt(page_num) - 1) * parseInt(page_size),
@@ -188,3 +188,76 @@ exports.pageUserAdmin = (req, res) => {
     });
   });
 };
+
+// 失物分页功能
+exports.adminPageLost = (req, res) => {
+  const page_num = req.query.page_num //当前的num
+  const page_size = req.query.page_size //当前页的数量
+  const params = [(parseInt(page_num) - 1) * parseInt(page_size), parseInt(page_size)]
+  const sql = 'select * from lost limit ?,?'
+  db.query(sql, params, (err, results1) => {
+    if (err) {
+      return res.ss(err)
+    }
+    if (results1.lengt <= 0) {
+      return res.ss('查询失败！')
+    }
+    const sql = 'select * from lost'
+    db.query(sql, (err, results2) => {
+      if (err) {
+        return res.ss(err)
+      }
+      if (results2.length <= 0) {
+        return res.ss('查询失败！')
+      }
+      const total = results2.length
+      res.send({
+        state: 200,
+        message: '查询成功！',
+        data: results1,
+        paging: {
+          page_num: page_num,
+          page_size: page_size,
+          total: total
+        }
+      })
+    })
+  })
+}
+
+// 招领分页功能
+exports.adminPageFound = (req, res) => {
+  const page_num = req.query.page_num //当前的num
+  const page_size = req.query.page_size //当前页的数量
+  const params = [(parseInt(page_num) - 1) * parseInt(page_size), parseInt(page_size)]
+  console.log(params)
+  const sql = 'select * from claim limit ?,?'
+  db.query(sql, params, (err, results1) => {
+    if (err) {
+      return res.ss(err)
+    }
+    if (results1.lengt <= 0) {
+      return res.ss('查询失败！')
+    }
+    const sql = 'select * from claim'
+    db.query(sql, (err, results2) => {
+      if (err) {
+        return res.ss(err)
+      }
+      if (results2.length <= 0) {
+        return res.ss('查询失败！')
+      }
+      const total = results2.length
+      res.send({
+        state: 200,
+        message: '查询成功！',
+        data: results1,
+        paging: {
+          page_num: page_num,
+          page_size: page_size,
+          total: total
+        }
+      })
+    })
+  })
+}

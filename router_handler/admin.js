@@ -63,7 +63,7 @@ exports.adminLogin_handler = (req, res) => {
     // 保障用户账号的安全性，剔除密码
     const admin = { ...results[0], password: '' }
     // 生成 token 字符串
-    const token = jwt.sign(admin, config.jwtSecretKey, {expiresIn: '1h'})
+    const token = jwt.sign(admin, config.jwtSecretKey, {expiresIn: '24h'})
     res.send({
       state: 200,
       message: '登陆成功！',

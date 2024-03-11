@@ -31,16 +31,16 @@ let friendRouter = require("./router/friend");
 let noticeRouter = require("./router/notice");
 // 建议模块
 let adviceRouter = require("./router/advice");
+// 认领模块
+let recoverRouter = require("./router/recover");
+// 管理员模块
+let adminRouter = require("./router/admin");
+// 管理员信息模块
+let adminInfoRouter = require("./router/adminInfo");
+// 管理用户模块
+let manageUserRouter = require("./router/manage_users");
 var app = express();
 
-
-// 注册路由
-app.use("/api/users", usersRouter);
-app.use("/api/usersinfo", usersInfoRouter);
-app.use("/api/claims", claimsRouter);
-app.use("/api/lost", lostRouter);
-app.use("/api/class", classRouter);
-app.use("/api/page", pageRouter);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -96,6 +96,10 @@ app.use(function (err, req, res, next) {
 });
 
 // 使用路由
+// 管理员路由
+app.use("/api", adminRouter);
+// 管理员信息路由
+app.use("/my", adminInfoRouter);
 // 用户登录路由
 app.use("/api/user", usersRouter);
 // 用户信息路由
@@ -118,4 +122,8 @@ app.use("/friend", friendRouter);
 app.use("/notice", noticeRouter);
 // 建议模块
 app.use("/advice", adviceRouter);
+// 认领模块
+app.use("/recover",recoverRouter)
+// 管理用户模块
+app.use('/my',manageUserRouter)
 module.exports = app;

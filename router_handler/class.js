@@ -35,7 +35,10 @@ exports.addClass = (req, res) => {
       return res.ss(err);
     }
     if (results.length === 1) {
-      return res.ss("分类已存在，无法新增！");
+      return res.send({
+        state:200,
+        message:"分类已存在，无法新增！"
+      });
     }
 
     const sql = "insert into class set ?";
@@ -44,9 +47,15 @@ exports.addClass = (req, res) => {
         return res.ss(err);
       }
       if (results.affectedRows !== 1) {
-        return res.ss("新增分类失败！");
+        return res.send({
+          state:201,
+          message:"新增分类失败！"
+        });
       }
-      res.ss("新增分类成功！", 200);
+      res.send({
+        state:200,
+        message:"新增分类成功！"
+      });
     });
   });
 };
@@ -61,9 +70,15 @@ exports.deleteClass = (req, res) => {
       return res.ss(err);
     }
     if (results.affectedRows !== 1) {
-      return res.ss("删除分类失败！");
+      return res.send({
+        state:201,
+        message:"删除分类失败！"
+      });
     }
-    res.ss("删除分类成功！", 200);
+    res.send({
+      state:200,
+      message:"删除分类成功！"
+    });
   });
 };
 
@@ -162,3 +177,24 @@ exports.foundClassList = (req, res) => {
       });
   });
 };
+
+// 修改分类信息
+exports.updateClass = (req, res) => {
+  const id = req.body.id;
+  const name = req.body.name;
+  const sql = "update class set name=? where id=?";
+  db.query(sql, [name, id], (err, results) => {
+    if (err) {
+      return res.status(500).send({
+        state: 500,
+        message: "修改分类信息失败！",
+      })
+    }
+    if(results.affectedRows == 1){
+      return res.send({
+        state: 200,
+        message: "修改分类信息成功！",
+      })
+    }
+  })
+}

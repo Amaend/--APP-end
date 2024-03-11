@@ -18,6 +18,10 @@ router.delete('/my/dtclass', classHandel.deleteClass)
 
 // 根据分类获取对应分类的失物和招领信息数据
 router.get('/api/lostclasslist', classHandel.lostClassList)
+
 router.get('/api/foundclasslist', classHandel.foundClassList)
+
+// 修改分类信息
+router.post('/my/updclass', classHandel.updateClass)
 
 module.exports = router

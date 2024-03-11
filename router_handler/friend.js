@@ -61,14 +61,14 @@ exports.addOneMsg = function (uid, fid, msg, type, res) {
   let data = {
     user_id: uid,
     friend_id: fid,
-    message:type==0 ? msg : JSON.stringify(msg),
+    message: type == 0 ? msg : JSON.stringify(msg),
     types: type,
     time: new Date().getTime(),
     state: 1,
   };
   db.query(`INSERT INTO message SET ?`, data, function (err, results) {
-    if (err){
-      console.log(err)
+    if (err) {
+      console.log(err);
     }
   });
 };
@@ -108,6 +108,10 @@ exports.applyFriend = function (req, res) {
       that.addOneMsg(data.user_id, data.friend_id, data.msg, 0, res);
     }
   );
+  res.send({
+    state: 200,
+    message: "申请成功",
+  });
 };
 
 // 同意好友申请
@@ -269,6 +273,8 @@ exports.getFriendListInfo = async function (req, res) {
         oneMsgResults.message = "[语音]";
       } else if (oneMsgResults.types == 3) {
         oneMsgResults.message = "[位置]";
+      }else if (oneMsgResults.types == 4) {
+        oneMsgResults.message = "[是否认领]";
       }
 
       friendResults[i].oneMsgResults = oneMsgResults;
@@ -357,7 +363,7 @@ exports.updateOneMessageState = function (req, res) {
 
 // 分页获取数据一对一聊天数据
 exports.getOneMessageByPage = (req, res) => {
-  let data=req.body;
+  let data = req.body;
   const params = [
     data.user_id,
     data.friend_id,
@@ -368,74 +374,78 @@ exports.getOneMessageByPage = (req, res) => {
   ];
   let countSql = `SELECT COUNT(*) AS total FROM message where (user_id=? and friend_id=?) or (user_id=? and friend_id=?)`;
   const sql = `select * from message where (user_id=? and friend_id=?) or (user_id=? and friend_id=?) ORDER BY time DESC limit ?,?`;
-  db.query(countSql,[data.user_id,data.friend_id,data.friend_id,data.user_id], (err, countResult) => {
-    if (err) {
-      return res.status(500).send(err);
-    }
-    const total = countResult[0].total;
-    const total_pages = Math.ceil(total / parseInt(data.page_size));
-    db.query(sql, params, (err, results) => {
+  db.query(
+    countSql,
+    [data.user_id, data.friend_id, data.friend_id, data.user_id],
+    (err, countResult) => {
       if (err) {
         return res.status(500).send(err);
       }
-      if (results.length <= 0) {
-        return res.status(404).send({
-          state: 201,
-          message: "获取数据失败！",
-        });
-      }
+      const total = countResult[0].total;
+      const total_pages = Math.ceil(total / parseInt(data.page_size));
+      db.query(sql, params, (err, results) => {
+        if (err) {
+          return res.status(500).send(err);
+        }
+        if (results.length <= 0) {
+          return res.status(404).send({
+            state: 201,
+            message: "获取数据失败！",
+          });
+        }
 
-      const getUserInfoPromises = results.map((item) => {
-        return new Promise((resolve, reject) => {
-          const userSql = "select * from user where id=?";
-          db.query(userSql, item.user_id, (err, userResult) => {
-            if (err) {
-              reject(err);
-            } else if (userResult.length !== 1) {
-              reject({
-                state: 201,
-                message: "用户信息获取失败！",
-              });
-            }else{
-              item.isMe=req.auth.id == userResult[0].id;
-              item.img=userResult[0].img;
-              item.name=userResult[0].name;
-              resolve(item);
-            }
+        const getUserInfoPromises = results.map((item) => {
+          return new Promise((resolve, reject) => {
+            const userSql = "select * from user where id=?";
+            db.query(userSql, item.user_id, (err, userResult) => {
+              if (err) {
+                reject(err);
+              } else if (userResult.length !== 1) {
+                reject({
+                  state: 201,
+                  message: "用户信息获取失败！",
+                });
+              } else {
+                item.isMe = req.auth.id == userResult[0].id;
+                item.img = userResult[0].img;
+                item.name = userResult[0].name;
+                resolve(item);
+              }
+            });
           });
         });
+
+        Promise.all(getUserInfoPromises)
+          .then((finalResults) => {
+            return res.status(200).send({
+              state: 200,
+              message: "获取数据成功！",
+              data: finalResults,
+              paging: {
+                page_num: parseInt(data.page_num),
+                page_size: parseInt(data.page_size),
+                total: total,
+                total_pages: total_pages,
+              },
+            });
+          })
+          .catch((error) => {
+            return res.status(500).send(error);
+          });
       });
-
-      Promise.all(getUserInfoPromises)
-        .then((finalResults) => {
-          return res.status(200).send({
-            state: 200,
-            message: "获取数据成功！",
-            data: finalResults,
-            paging: {
-              page_num: parseInt(data.page_num),
-              page_size: parseInt(data.page_size),
-              total: total,
-              total_pages: total_pages,
-            },
-          });
-        })
-        .catch((error) => {
-          return res.status(500).send(error);
-        });
-    });
-  });
+    }
+  );
 };
 // 上传聊天附件
 exports.uploaMsgdFile = (req, res) => {
   const message = `/images/${req.body.url}/` + req.file.filename;
-  if(message){
+  if (message) {
     return res.send({
       state: 200,
       message: message,
-    })
+    });
   }
-}
+};
 // 获取好友数
 exports.getFriendsNum = (req, res) => {
   const userId = req.auth.id;
@@ -446,19 +456,18 @@ exports.getFriendsNum = (req, res) => {
         state: 500,
         message: "获取数据失败！",
       });
-      }
-      if(results.length === 0){
-        return res.send({
-          state: 201,
-          message: "暂无好友！",
-          data: results,
-        })
-      }
-      return res.send({
-        state: 200,
-        message: "获取数据成功！",
-        data: results[0],
-      })
     }
-  )
-}
+    if (results.length === 0) {
+      return res.send({
+        state: 201,
+        message: "暂无好友！",
+        data: results,
+      });
+    }
+    return res.send({
+      state: 200,
+      message: "获取数据成功！",
+      data: results[0],
+    });
+  });
+};

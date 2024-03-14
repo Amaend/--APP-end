@@ -2,28 +2,41 @@
 const db = require("../db");
 
 // 获取系统公告
-exports.getNotices = (req, res) => {
-  const sql = "SELECT * FROM notice ORDER BY time desc";
-  db.query(sql, (error, results) => {
-    if (error) {
-      console.error(error);
-      return res.status(500).json({
-        message: "服务器错误",
-      });
+exports.adminGetNoticeList = function (req, res) {
+  const page_num = req.query.page_num; //当前的num
+  const page_size = req.query.page_size; //当前页的数量
+  const params = [
+    (parseInt(page_num) - 1) * parseInt(page_size),
+    parseInt(page_size),
+  ];
+  const sql = "select * from notice limit ?,?";
+  db.query(sql, params, (err, results1) => {
+    if (err) {
+      return res.ss(err);
     }
-    if (results.length === 0) {
-      return res.send({
+    if (results1.lengt <= 0) {
+      return res.ss("查询失败！");
+    }
+    const sql = "select * from notice";
+    db.query(sql, (err, results2) => {
+      if (err) {
+        return res.ss(err);
+      }
+      if (results2.length <= 0) {
+        return res.ss("查询失败！");
+      }
+      const total = results2.length;
+      res.send({
         state: 200,
-        message: "暂无公告",
+        message: "查询成功！",
+        data: results1,
+        paging: {
+          page_num: page_num,
+          page_size: page_size,
+          total: total,
+        },
       });
-    }
-    if (results.length > 0) {
-      return res.send({
-        state: 200,
-        message: "获取成功",
-        data: results,
-      });
-    }
+    });
   });
 };
 // 根据用户id查找未读的系统公告内容
@@ -129,3 +142,79 @@ exports.getLatestNotice = (req, res) => {
     }
   });
 };
+// 管理员删除公告信息
+exports.deleteNotice = (req, res) => {
+  const id = req.query.id;
+  const sql = "delete from notice where id = ?";
+  db.query(sql, id, (err, results) => {
+    if (err) {
+      res.send({
+        state: 500,
+        message: err,
+      });
+    } else {
+      if (results.affectedRows !== 1) {
+        return res.send({
+          state: 201,
+          message: "删除失败",
+        });
+      } else {
+        return res.send({
+          state: 200,
+          message: "删除成功",
+        });
+      }
+    }
+  });
+}
+// 管理员添加公告信息
+exports.addNotice = (req, res) => {
+  const notice = req.body;
+  const sql = "insert into notice set ?";
+  db.query(sql, notice, (err, results) => {
+    if(err){
+      return res.send({
+        state: 500,
+        message: err
+      })
+    }else{
+      if(results.affectedRows !== 1){
+        return res.send({
+          state: 201,
+          message: "添加失败"
+        })
+      }else{
+        return res.send({
+          state: 200,
+          message: "添加成功"
+        })
+      }
+    }
+  })
+}
+
+// 管理员编辑公告信息
+exports.updateNotice = (req, res) => {
+  let notice = req.body;
+  const sql = "update notice set ? where id = ?";
+  db.query(sql, [notice, notice.id], (err, results) => {
+    if (err) {
+      return res.send({
+        state: 500,
+        message: err,
+      })
+    }else{
+      if(results.affectedRows !== 1){
+        res.send({
+          state: 201,
+          message: "编辑失败"
+        })
+      }else{
+        res.send({
+          state: 200,
+          message: "编辑成功"
+        })
+      }
+    }
+  })
+}

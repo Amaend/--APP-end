@@ -12,18 +12,18 @@ exports.adminGetNoticeList = function (req, res) {
   const sql = "select * from notice limit ?,?";
   db.query(sql, params, (err, results1) => {
     if (err) {
-      return res.ss(err);
+      return res.send(err);
     }
     if (results1.lengt <= 0) {
-      return res.ss("查询失败！");
+      return res.send("查询失败！");
     }
     const sql = "select * from notice";
     db.query(sql, (err, results2) => {
       if (err) {
-        return res.ss(err);
+        return res.send(err);
       }
       if (results2.length <= 0) {
-        return res.ss("查询失败！");
+        return res.send("查询失败！");
       }
       const total = results2.length;
       res.send({
@@ -215,6 +215,24 @@ exports.updateNotice = (req, res) => {
           message: "编辑成功"
         })
       }
+    }
+  })
+}
+// 用户获取公告信息
+exports.getNotice = (req, res) => {
+  const sql = "select * from notice";
+  db.query(sql, (err, results) => {
+    if(err){
+      return res.send({
+        state: 500,
+        message: err
+      })
+    }else{
+      res.send({
+        state: 200,
+        message: "获取成功",
+        data: results
+      })
     }
   })
 }

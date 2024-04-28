@@ -26,4 +26,7 @@ router.delete('/admin/delete/notice', notice.deleteNotice)
 // 管理员编辑公告信息
 router.post('/admin/edit/notice', notice.updateNotice)
 
+// 用户获取公告信息
+router.get('/get/api/notice', notice.getNotice)
+
 module.exports = router

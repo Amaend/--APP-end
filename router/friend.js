@@ -37,4 +37,7 @@ router.post('/upload/message/file', upload.single('file'), friend.uploaMsgdFile)
 // 获取好友数
 router.get('/get/friend/count', friend.getFriendsNum)
 
+// 获取用户未读数
+router.post('/get/unread/count', friend.getUnreadMsgNum)
+
 module.exports = router

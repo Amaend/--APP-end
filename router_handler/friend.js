@@ -1,5 +1,9 @@
 // 好友模块
 const db = require("../db");
+// 导入未读公告数处理函数
+const {
+  getUnreadNoticeHandle
+} = require("./notice");
 // 保存this指向
 let that = this;
 // 搜索好友
@@ -176,7 +180,7 @@ exports.refuseFriend = function (req, res) {
 };
 
 // 获取好友列表
-function getFriendList(uid, state, res) {
+function getFriendList(uid, state) {
   return new Promise((resolve, reject) => {
     db.query(
       `SELECT * FROM friend WHERE user_id = ? and state=? ORDER BY last_time desc`,
@@ -184,39 +188,48 @@ function getFriendList(uid, state, res) {
       function (err, results) {
         if (err) {
           console.error("Error getting friend list:", err);
-          return res.status(500).send({
-            error: "Could not get friend list",
-          });
+          reject("Could not get friend list");
+          return;
         }
         if (results.length == 0) {
-          return res.send({
+          resolve({
             state: 201,
             message: "暂无好友",
           });
+          return;
         }
         if (results.length > 0) {
-          for (let i = 0; i < results.length; i++) {
-            db.query(
-              `select id,name,img,user_Signs from user where id=?`,
-              results[i].friend_id,
-              function (err, usreResult) {
-                if (usreResult.length < 0) {
-                  return res.status(500).send({
-                    error: "Could not get friend list",
-                  });
-                } else {
-                  results[i].friendInfo = usreResult[0];
-                  // results[i].type = 0;
+          const promises = results.map((result) => {
+            return new Promise((resolve, reject) => {
+              db.query(
+                `select id,name,img,user_Signs from user where id=?`,
+                result.friend_id,
+                function (err, userResult) {
+                  if (err) {
+                    reject("Could not get friend info");
+                    return;
+                  }
+                  if (userResult.length > 0) {
+                    result.friendInfo = userResult[0];
+                  }
+                  resolve(result);
                 }
-              }
-            );
-          }
-          resolve(results);
+              );
+            });
+          });
+          Promise.all(promises)
+            .then((friendList) => {
+              resolve(friendList);
+            })
+            .catch((error) => {
+              reject(error);
+            });
         }
       }
     );
   });
 }
+
 
 // 按要求获取最后一条消息数
 function getOneMessage(uid, fid) {
@@ -273,7 +286,7 @@ exports.getFriendListInfo = async function (req, res) {
         oneMsgResults.message = "[语音]";
       } else if (oneMsgResults.types == 3) {
         oneMsgResults.message = "[位置]";
-      }else if (oneMsgResults.types == 4) {
+      } else if (oneMsgResults.types == 4) {
         oneMsgResults.message = "[是否认领]";
       }
 
@@ -471,3 +484,51 @@ exports.getFriendsNum = (req, res) => {
     });
   });
 };
+// 获取好友申请数
+function getApplyFriendNum(userId, state) {
+  return new Promise((resolve, reject) => {
+    const applySql = `select count(*) as num from friend where user_id=? and state!=?`;
+    db.query(applySql, [userId, state], (err, results) => {
+      if (err) {
+        return res.status(500).send({
+          state: 500,
+          message: "获取数据失败！",
+        });
+      } else {
+        resolve(results[0] ? results[0].num : 0);
+      }
+    })
+  });
+}
+
+// 用户未读消息数汇总
+exports.getUnreadMsgNum = async (req, res) => {
+  let {
+    user_id,
+    state
+  } = req.body;
+  // 定义总数
+  let unReadMsg = 0;
+  // 定义好友申请数
+  let applyNum = await getApplyFriendNum(user_id, state);
+  // 定义公告未读数
+  const {
+    unreadResults
+  } = await getUnreadNoticeHandle(user_id);
+
+  const friendResults = await getFriendList(user_id, state);
+
+  for (let i = 0; i < friendResults.length; i++) {
+    const unreadResults = await getOneMessageUnread(
+      user_id,
+      friendResults[i].friend_id
+    );
+    unReadMsg += unreadResults.unread;
+  }
+  res.send({
+    state: 200,
+    msg: "获取未读消息数成功",
+    total: applyNum + unReadMsg + unreadResults.length
+
+  })
+}

@@ -1,6 +1,6 @@
 // 系统公告模块
 const db = require("../db");
-
+const that=this
 // 获取系统公告
 exports.adminGetNoticeList = function (req, res) {
   const page_num = req.query.page_num; //当前的num
@@ -39,40 +39,48 @@ exports.adminGetNoticeList = function (req, res) {
     });
   });
 };
-// 根据用户id查找未读的系统公告内容
-exports.getUnreadNoticesById = (req, res) => {
-  let unreadResults = [];
-  db.query("SELECT * FROM notice ORDER BY time desc", (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({
-        message: "服务器错误",
-      });
-    }
-    if (results.length === 0) {
-      return res.send({
-        state: 200,
-        message: "暂无公告",
-      });
-    }
-    for (let i = 0; i < results.length; i++) {
-      if (
-        !results[i].user_confir ||
-        !results[i].user_confir.includes(req.auth.id)
-      ) {
-        // 如果 user_confir 不存在或不包含用户id，则将该公告加入未读列表
-        unreadResults.push(results[i]);
-      } else {
-        // 其他情况（已读等），可以在此处进行处理，比如标记已读状态
-        console.log("已读");
+// 获取未读公告处理函数
+exports.getUnreadNoticeHandle=(user_id)=> {
+  return new Promise((resolve, reject) => {
+    let unreadResults = [];
+    db.query("SELECT * FROM notice ORDER BY time desc", (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({
+          message: "服务器错误",
+        });
       }
-    }
-    res.send({
-      state: 200,
-      message: "获取成功",
-      data: unreadResults.length ? unreadResults : [results[0]],
-      unReadCount: unreadResults.length,
+      if (results.length === 0) {
+        return res.send({
+          state: 200,
+          message: "暂无公告",
+        });
+      }
+      for (let i = 0; i < results.length; i++) {
+        if (
+          !results[i].user_confir ||
+          !results[i].user_confir.includes(user_id)
+        ) {
+          // 如果 user_confir 不存在或不包含用户id，则将该公告加入未读列表
+          unreadResults.push(results[i]);
+        } else {
+          // 其他情况（已读等），可以在此处进行处理，比如标记已读状态
+          console.log("已读");
+        }
+      }
+      resolve({unreadResults,results});
     });
+  })
+}
+// 根据用户id查找未读的系统公告内容
+exports.getUnreadNoticesById = async(req, res) => {
+  const user_id = req.auth.id;
+  const {unreadResults ,results}= await this.getUnreadNoticeHandle(user_id);
+  res.send({
+    state: 200,
+    message: "获取成功",
+    data: unreadResults.length ? unreadResults : [results[0]],
+    unReadCount: unreadResults.length,
   });
 };
 // 添加已读user_confir
@@ -94,9 +102,9 @@ exports.markAllNoticesAsRead = (req, res) => {
     // 对每个公告进行处理
     results.forEach((notice) => {
       // 检查 user_confir 是否存在，如果不存在，初始化为一个空数组
-      const userConfir = notice.user_confir
-        ? JSON.parse(notice.user_confir)
-        : [];
+      const userConfir = notice.user_confir ?
+        JSON.parse(notice.user_confir) :
+        [];
       // 检查用户是否已读过该公告，如果没有，则将用户ID添加到 user_confir 中
       if (!userConfir.includes(userId)) {
         userConfir.push(userId);
@@ -134,11 +142,11 @@ exports.getLatestNotice = (req, res) => {
         message: "暂无公告",
       });
     }
-    if(results.length>0){
-        res.send({
-            state: 200,
-            data: results[0],
-        })
+    if (results.length > 0) {
+      res.send({
+        state: 200,
+        data: results[0],
+      })
     }
   });
 };
@@ -172,18 +180,18 @@ exports.addNotice = (req, res) => {
   const notice = req.body;
   const sql = "insert into notice set ?";
   db.query(sql, notice, (err, results) => {
-    if(err){
+    if (err) {
       return res.send({
         state: 500,
         message: err
       })
-    }else{
-      if(results.affectedRows !== 1){
+    } else {
+      if (results.affectedRows !== 1) {
         return res.send({
           state: 201,
           message: "添加失败"
         })
-      }else{
+      } else {
         return res.send({
           state: 200,
           message: "添加成功"
@@ -203,13 +211,13 @@ exports.updateNotice = (req, res) => {
         state: 500,
         message: err,
       })
-    }else{
-      if(results.affectedRows !== 1){
+    } else {
+      if (results.affectedRows !== 1) {
         res.send({
           state: 201,
           message: "编辑失败"
         })
-      }else{
+      } else {
         res.send({
           state: 200,
           message: "编辑成功"
@@ -222,12 +230,12 @@ exports.updateNotice = (req, res) => {
 exports.getNotice = (req, res) => {
   const sql = "select * from notice";
   db.query(sql, (err, results) => {
-    if(err){
+    if (err) {
       return res.send({
         state: 500,
         message: err
       })
-    }else{
+    } else {
       res.send({
         state: 200,
         message: "获取成功",
